@@ -17,8 +17,11 @@ export async function handleSync({ block, tx, rawEvent, mysql }: Parameters<Chec
   const format = 'reserve0, low, reserve1, low';
   const data: any = getEvent(rawEvent.data, format);
 
+  console.log("*****************");
+  console.log("***" + block!.block_number + "*********");
+  console.log("*****************");
   // Load or create the pair
-  const pairId = process.env.PAIR!;
+  const pairId = process.env.PAIR! + "_" + block!.block_number;
   let pair: Pair | null = await loadPair(pairId, mysql);
   if (!pair) {
     pair = {
@@ -54,5 +57,7 @@ export async function handleSync({ block, tx, rawEvent, mysql }: Parameters<Chec
   pair.timestamp = block!.timestamp;
   pair.synced = block!.block_number;
   pair.tx = tx.transaction_hash!;
+  //await createPair(pair, mysql)
   await updatePair(pair, mysql);
+
 }
