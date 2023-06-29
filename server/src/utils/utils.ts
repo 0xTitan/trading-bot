@@ -14,7 +14,8 @@ const provider = new starknet.Provider({
 });
 
 export type Pair = {
-  id: string;
+  id?: number;
+  contract: string;
   reserve0: number;
   reserve1: number;
   price: number;
@@ -41,8 +42,8 @@ export const hexStrArrToStr = (data: string[], start: number, length: number | b
   return shortStringArrToStr(dataSlice.map(m => BigInt(m)));
 };
 
-export async function loadPair(pairId: string, mysql): Promise<Pair | null> {
-  const pair = await mysql.queryAsync('SELECT * FROM pairs WHERE id = ?', [pairId]);
+export async function loadPair(blockNumber: number, mysql): Promise<Pair | null> {
+  const pair = await mysql.queryAsync('SELECT * FROM pairs WHERE id= ?', [blockNumber]);
   return pair.length > 0 ? pair[0] : null;
 }
 

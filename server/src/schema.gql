@@ -1,5 +1,6 @@
 type Pair {
-  id: String! # Pair id
+  id: Int! # Pair id
+  contract: String! # Pair id
   reserve0: Float! # Reserve of token 0
   reserve1: Float! # Reserve of token 1
   price: Float! # Updated price

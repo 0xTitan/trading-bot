@@ -1,4 +1,4 @@
-import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
+import type { CheckpointWriter } from '@snapshot-labs/checkpoint'
 import {
   convertToDecimal,
   getEvent,
@@ -21,11 +21,12 @@ export async function handleSync({ block, tx, rawEvent, mysql }: Parameters<Chec
   console.log("***" + block!.block_number + "*********");
   console.log("*****************");
   // Load or create the pair
-  const pairId = process.env.PAIR! + "_" + block!.block_number;
-  let pair: Pair | null = await loadPair(pairId, mysql);
+  const pairId = process.env.PAIR!;
+  let pair: Pair | null = await loadPair(block!.block_number, mysql);
   if (!pair) {
     pair = {
-      id: pairId,
+      id: block!.block_number,
+      contract: pairId,
       reserve0: 0,
       reserve1: 0,
       price: 0,
@@ -33,7 +34,8 @@ export async function handleSync({ block, tx, rawEvent, mysql }: Parameters<Chec
       synced: block!.block_number,
       tx: tx.transaction_hash!
     };
-    await createPair(pair, mysql);
+    //console.log('create pair');
+    //await createPair(pair, mysql);
   }
 
   // Update reserves and calculate the price
@@ -53,11 +55,12 @@ export async function handleSync({ block, tx, rawEvent, mysql }: Parameters<Chec
     // Insert your swap method here
   }
 
+  console.log('Update pair');
   // Update the pair and save it in the database
   pair.timestamp = block!.timestamp;
   pair.synced = block!.block_number;
   pair.tx = tx.transaction_hash!;
-  //await createPair(pair, mysql)
-  await updatePair(pair, mysql);
+  await createPair(pair, mysql)
+  //await updatePair(pair, mysql);
 
 }
